@@ -24,5 +24,93 @@ namespace CreapediaWebApi.Controllers
         {
             return await db.Users.ToArrayAsync();
         }
+        // GET: api/Users/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<User>> GetUser(int id)
+        {
+            var user = await db.Users.FindAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return user;
+        }
+        [HttpGet("{mail}")]
+        public async Task<object> GetUser(string? mail, string? pass)
+        {
+            //if (mail != null)
+            //{
+                User user = await db.Users.Where(x => x.Mail == mail && x.Password == pass).FirstAsync();
+                if (user == null)
+                    return BadRequest("Неверная комбинация логина и пароля");
+                //if (!user.MailConfirm)
+                //    return BadRequest("Нужно подтверждение почты");
+                return Ok(user);
+            //}
+            //else
+            //    return db.Users.Select(x => new { x.Id, x.Name });
+        }
+
+        // PUT: api/Users/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for
+        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutUser(int id, User user)
+        {
+            if (id != user.Id)
+            {
+                return BadRequest();
+            }
+
+            db.Entry(user).State = EntityState.Modified;
+
+            try
+            {
+                await db.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UserExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return NoContent();
+        }
+                
+        [HttpPost]
+        public async Task<ActionResult<User>> PostUser(User user)
+        {
+            db.Users.Add(user);
+            await db.SaveChangesAsync();
+
+            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+        }        
+
+        // DELETE: api/Users/5
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<User>> DeleteUser(int id)
+        {
+            var user = await db.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            db.Users.Remove(user);
+            await db.SaveChangesAsync();
+
+            return user;
+        }
+
+        private bool UserExists(int id)
+        {
+            return db.Users.Any(e => e.Id == id);
+        }        
     }
 }
