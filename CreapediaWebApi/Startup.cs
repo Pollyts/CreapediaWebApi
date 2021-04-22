@@ -26,11 +26,12 @@ namespace CreapediaWebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             string con = "Trust Server Certificate=True;SSL Mode=Require;Host=ec2-54-220-53-223.eu-west-1.compute.amazonaws.com;Database=d2v9eis2ivh7hh;Username=nszmoagmjrbjkq;Password=bdbc52b63a7f68cc172fac4e9f3a373f0a7d78f837b4471e2ed47c4b2167c23c";
             // устанавливаем контекст данных
             services.AddDbContext<d2v9eis2ivh7hhContext>(options => options.UseNpgsql(con));
             services.AddControllers().AddJsonOptions(options =>
-               options.JsonSerializerOptions.PropertyNamingPolicy = null); ;
+               options.JsonSerializerOptions.PropertyNamingPolicy = null);            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,6 +45,10 @@ namespace CreapediaWebApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseCors(builder => builder
+     .AllowAnyOrigin()
+     .AllowAnyMethod()
+     .AllowAnyHeader());
 
             app.UseAuthorization();
 
