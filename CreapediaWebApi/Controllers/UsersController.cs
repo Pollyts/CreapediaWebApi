@@ -8,9 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using CreapediaWebApi.Models;
 
 namespace CreapediaWebApi.Controllers
-{
-    [Route("[controller]")]
+{    
     [ApiController]
+    [Route("[controller]")]
     public class UsersController : ControllerBase
     {
         d2v9eis2ivh7hhContext db;
@@ -18,26 +18,17 @@ namespace CreapediaWebApi.Controllers
         {
             db = context;
         }
-
-        [HttpGet]
-        public async Task<User[]> GetUsers()
-        {
-            return await db.Users.ToArrayAsync();
-        }
         // GET: api/Users/5
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-            var user = await db.Users.FindAsync(id);
-
+            User user = await db.Users.FirstOrDefaultAsync(x => x.Id == id);
             if (user == null)
-            {
                 return NotFound();
-            }
-
-            return user;
+            return new ObjectResult(user);
         }
-        [HttpGet("{mail}")]
+
+        [HttpGet]
         public async Task<object> GetUser(string? mail, string? pass)
         {
             //if (mail != null)
