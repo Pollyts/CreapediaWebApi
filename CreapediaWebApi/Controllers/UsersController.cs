@@ -80,7 +80,6 @@ namespace CreapediaWebApi.Controllers
         {
             db.Users.Add(user);
             await db.SaveChangesAsync();
-
             return CreatedAtAction("GetUser", new { id = user.Id }, user);
         }        
 
