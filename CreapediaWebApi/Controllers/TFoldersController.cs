@@ -37,6 +37,13 @@ namespace CreapediaWebApi.Controllers
                 return NotFound();
             return tfolders;
         }
+        [HttpPost]
+        public async Task<IActionResult> PostUser(Templatefolder tfolder)
+        {
+            db.Templatefolders.Add(tfolder);
+            await db.SaveChangesAsync();
+            return Ok();
+        }
 
         // PUT: api/Users/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
@@ -69,14 +76,7 @@ namespace CreapediaWebApi.Controllers
         //    return NoContent();
         //}
 
-        //[HttpPost]
-        //public async Task<ActionResult<User>> PostUser(User user)
-        //{
-        //    db.Users.Add(user);
-        //    await db.SaveChangesAsync();
 
-        //    return CreatedAtAction("GetUser", new { id = user.Id }, user);
-        //}
 
         //// DELETE: api/Users/5
         //[HttpDelete("{id}")]
