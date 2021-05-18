@@ -37,66 +37,127 @@ namespace CreapediaWebApi.Controllers
                 return NotFound();
             return tfolders;
         }
+
+        [HttpGet]
+        [Route("/tfolders/export")]
+        public async Task<IActionResult> ExportFolder(string? mail, int folderid)
+        {
+            User user = await db.Users.Where(x => x.Mail == mail).FirstAsync();
+            if (user == null)
+                return BadRequest("Нет такого пользователя");
+            else
+            {
+                Templatefolder import= await db.Templatefolders.Where(x => x.Name=="Импорт"&&x.ParentfolderId==null&&x.Userid==user.Id).FirstOrDefaultAsync();
+                if(import==null)
+                {
+                    import = new Templatefolder()
+                    {
+                        Name = "Импорт",
+                        Userid = user.Id
+                    };
+                    db.Templatefolders.Add(import);
+                }
+                await db.SaveChangesAsync();
+                Templatefolder oldfolder = await db.Templatefolders.Where(x => x.Id==folderid).FirstAsync();
+                Templatefolder newfolder = new Templatefolder()
+                {
+                    Name = oldfolder.Name,
+                    ParentfolderId = import.Id,
+                    Userid = user.Id
+                };
+                db.Templatefolders.Add(newfolder);
+                await db.SaveChangesAsync();
+                await AddFolders(oldfolder.Id, newfolder.Id, user.Id);
+                await AddElements(oldfolder.Id, newfolder.Id, user.Id);                
+                return Ok();
+            }
+        }
+
+        public async Task AddFolders(int oldparentfolder, int newparentfolder, int userid)
+        {
+            Templatefolder[] tfolders = await db.Templatefolders.Where(x => x.ParentfolderId == oldparentfolder).ToArrayAsync();
+            if (tfolders.Length>0)
+            foreach (Templatefolder t in tfolders)
+            {
+                    Templatefolder newfolder = new Templatefolder()
+                    {
+                        Name = t.Name,
+                        ParentfolderId = newparentfolder,
+                        Userid = userid
+                    };
+                    db.Templatefolders.Add(newfolder);
+                    await db.SaveChangesAsync();
+                    await AddFolders(t.Id, newfolder.Id, userid);
+                    await AddElements(t.Id, newfolder.Id, userid);
+                }
+        }
+        public async Task AddElements(int oldparentfolder, int newparentfolder, int userid)
+        {
+            Templateelement[] telements = await db.Templateelements.Where(x => x.TemplatefolderId == oldparentfolder).ToArrayAsync();
+            if (telements.Length>0)
+                foreach (Templateelement el in telements)
+                {
+                    Templateelement newelement = new Templateelement()
+                    {
+                        Name = el.Name,
+                        TemplatefolderId = newparentfolder,
+                    };
+                    db.Templateelements.Add(newelement);
+                    await db.SaveChangesAsync();
+                }
+
+        }
         [HttpPost]
-        public async Task<IActionResult> PostUser(Templatefolder tfolder)
+        public async Task<IActionResult> PostTfolder(Templatefolder tfolder)
         {
             db.Templatefolders.Add(tfolder);
             await db.SaveChangesAsync();
             return Ok();
         }
 
-        // PUT: api/Users/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> PutUser(int id, User user)
-        //{
-        //    if (id != user.Id)
-        //    {
-        //        return BadRequest();
-        //    }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutTFolder(int id, Templatefolder tfolder)
+        {
+            if (id != tfolder.Id)
+            {
+                return BadRequest();
+            }
 
-        //    db.Entry(user).State = EntityState.Modified;
+            db.Entry(tfolder).State = EntityState.Modified;
 
-        //    try
-        //    {
-        //        await db.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!UserExists(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
-        //    return NoContent();
-        //}
+            try
+            {
+                await db.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!db.Templatefolders.Any(e => e.Id == id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
+            return NoContent();
+        }
 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Templatefolder>> DeleteUser(int id)
+        {
+            var tfolder = await db.Templatefolders.FindAsync(id);
+            if (tfolder == null)
+            {
+                return NotFound();
+            }
+            db.Templatefolders.Remove(tfolder);
+            await db.SaveChangesAsync();
 
-        //// DELETE: api/Users/5
-        //[HttpDelete("{id}")]
-        //public async Task<ActionResult<User>> DeleteUser(int id)
-        //{
-        //    var user = await db.Users.FindAsync(id);
-        //    if (user == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    db.Users.Remove(user);
-        //    await db.SaveChangesAsync();
-
-        //    return user;
-        //}
-
-        //private bool UserExists(int id)
-        //{
-        //    return db.Users.Any(e => e.Id == id);
-        //}
+            return tfolder;
+        }
+        
     }
 }
 
