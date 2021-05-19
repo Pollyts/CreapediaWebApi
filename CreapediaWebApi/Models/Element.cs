@@ -7,18 +7,13 @@ namespace CreapediaWebApi.Models
 {
     public partial class Element
     {
-        public Element()
-        {
-            Characteristics = new HashSet<Characteristic>();
-        }
-
         public int Id { get; set; }
         public string Name { get; set; }
-        public int? FolderId { get; set; }
-        public int? TemplateelementId { get; set; }
+        public byte[] Image { get; set; }
+        public DateTime? Lastupdate { get; set; }
+        public int? Chatacteristicscount { get; set; }
+        public int? Parentfolderid { get; set; }
 
-        public virtual Folder Folder { get; set; }
-        public virtual Templateelement Templateelement { get; set; }
-        public virtual ICollection<Characteristic> Characteristics { get; set; }
+        public virtual Folder Parentfolder { get; set; }
     }
 }

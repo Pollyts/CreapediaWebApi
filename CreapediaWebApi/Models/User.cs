@@ -9,16 +9,14 @@ namespace CreapediaWebApi.Models
     {
         public User()
         {
-            Projects = new HashSet<Project>();
-            Templatefolders = new HashSet<Templatefolder>();
+            Folders = new HashSet<Folder>();
         }
 
         public int Id { get; set; }
-        public string Name { get; set; }
         public string Mail { get; set; }
         public string Password { get; set; }
+        public bool? Mailconfirm { get; set; }
 
-        public virtual ICollection<Project> Projects { get; set; }
-        public virtual ICollection<Templatefolder> Templatefolders { get; set; }
+        public virtual ICollection<Folder> Folders { get; set; }
     }
 }
