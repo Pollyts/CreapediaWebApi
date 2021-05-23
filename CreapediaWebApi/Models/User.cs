@@ -10,6 +10,7 @@ namespace CreapediaWebApi.Models
         public User()
         {
             Folders = new HashSet<Folder>();
+            Templatefolders = new HashSet<Templatefolder>();
         }
 
         public int Id { get; set; }
@@ -18,5 +19,6 @@ namespace CreapediaWebApi.Models
         public bool? Mailconfirm { get; set; }
 
         public virtual ICollection<Folder> Folders { get; set; }
+        public virtual ICollection<Templatefolder> Templatefolders { get; set; }
     }
 }

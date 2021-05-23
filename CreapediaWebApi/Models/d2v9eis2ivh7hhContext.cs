@@ -17,8 +17,14 @@ namespace CreapediaWebApi.Models
         {
         }
 
+        public virtual DbSet<Characteristic> Characteristics { get; set; }
         public virtual DbSet<Element> Elements { get; set; }
+        public virtual DbSet<Elementlink> Elementlinks { get; set; }
         public virtual DbSet<Folder> Folders { get; set; }
+        public virtual DbSet<Templatecharacteristic> Templatecharacteristics { get; set; }
+        public virtual DbSet<Templateelement> Templateelements { get; set; }
+        public virtual DbSet<Templatefolder> Templatefolders { get; set; }
+        public virtual DbSet<Templatelink> Templatelinks { get; set; }
         public virtual DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -33,6 +39,29 @@ namespace CreapediaWebApi.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("Relational:Collation", "en_US.UTF-8");
+
+            modelBuilder.Entity<Characteristic>(entity =>
+            {
+                entity.ToTable("characteristics");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Elementid).HasColumnName("elementid");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50)
+                    .HasColumnName("name");
+
+                entity.Property(e => e.Value)
+                    .HasMaxLength(300)
+                    .HasColumnName("value");
+
+                entity.HasOne(d => d.Element)
+                    .WithMany(p => p.Characteristics)
+                    .HasForeignKey(d => d.Elementid)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("characteristics_elementid_fkey");
+            });
 
             modelBuilder.Entity<Element>(entity =>
             {
@@ -57,6 +86,29 @@ namespace CreapediaWebApi.Models
                     .HasForeignKey(d => d.Parentfolderid)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("elements_parentfolderid_fkey");
+            });
+
+            modelBuilder.Entity<Elementlink>(entity =>
+            {
+                entity.ToTable("elementlinks");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Childelementid).HasColumnName("childelementid");
+
+                entity.Property(e => e.Parenttelementid).HasColumnName("parenttelementid");
+
+                entity.HasOne(d => d.Childelement)
+                    .WithMany(p => p.Elementlinks)
+                    .HasForeignKey(d => d.Childelementid)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("elementlinks_childelementid_fkey");
+
+                entity.HasOne(d => d.Parenttelement)
+                    .WithMany(p => p.Elementlinks)
+                    .HasForeignKey(d => d.Parenttelementid)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("elementlinks_parenttelementid_fkey");
             });
 
             modelBuilder.Entity<Folder>(entity =>
@@ -90,6 +142,98 @@ namespace CreapediaWebApi.Models
                     .HasForeignKey(d => d.Userid)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("folders_userid_fkey");
+            });
+
+            modelBuilder.Entity<Templatecharacteristic>(entity =>
+            {
+                entity.ToTable("templatecharacteristics");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50)
+                    .HasColumnName("name");
+
+                entity.Property(e => e.Telementid).HasColumnName("telementid");
+
+                entity.Property(e => e.Value)
+                    .HasMaxLength(300)
+                    .HasColumnName("value");
+
+                entity.HasOne(d => d.Telement)
+                    .WithMany(p => p.Templatecharacteristics)
+                    .HasForeignKey(d => d.Telementid)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("templatecharacteristics_telementid_fkey");
+            });
+
+            modelBuilder.Entity<Templateelement>(entity =>
+            {
+                entity.ToTable("templateelements");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50)
+                    .HasColumnName("name");
+
+                entity.Property(e => e.Parentfolderid).HasColumnName("parentfolderid");
+
+                entity.HasOne(d => d.Parentfolder)
+                    .WithMany(p => p.Templateelements)
+                    .HasForeignKey(d => d.Parentfolderid)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("templateelements_parentfolderid_fkey");
+            });
+
+            modelBuilder.Entity<Templatefolder>(entity =>
+            {
+                entity.ToTable("templatefolders");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50)
+                    .HasColumnName("name");
+
+                entity.Property(e => e.Parentfolderid).HasColumnName("parentfolderid");
+
+                entity.Property(e => e.Userid).HasColumnName("userid");
+
+                entity.HasOne(d => d.Parentfolder)
+                    .WithMany(p => p.InverseParentfolder)
+                    .HasForeignKey(d => d.Parentfolderid)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("templatefolders_parentfolderid_fkey");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Templatefolders)
+                    .HasForeignKey(d => d.Userid)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("templatefolders_userid_fkey");
+            });
+
+            modelBuilder.Entity<Templatelink>(entity =>
+            {
+                entity.ToTable("templatelinks");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Childelementid).HasColumnName("childelementid");
+
+                entity.Property(e => e.Parenttelementid).HasColumnName("parenttelementid");
+
+                entity.HasOne(d => d.Childelement)
+                    .WithMany(p => p.TemplatelinkChildelements)
+                    .HasForeignKey(d => d.Childelementid)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("templatelinks_childelementid_fkey");
+
+                entity.HasOne(d => d.Parenttelement)
+                    .WithMany(p => p.TemplatelinkParenttelements)
+                    .HasForeignKey(d => d.Parenttelementid)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("templatelinks_parenttelementid_fkey");
             });
 
             modelBuilder.Entity<User>(entity =>

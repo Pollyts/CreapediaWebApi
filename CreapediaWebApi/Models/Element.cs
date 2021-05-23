@@ -7,6 +7,12 @@ namespace CreapediaWebApi.Models
 {
     public partial class Element
     {
+        public Element()
+        {
+            Characteristics = new HashSet<Characteristic>();
+            Elementlinks = new HashSet<Elementlink>();
+        }
+
         public int Id { get; set; }
         public string Name { get; set; }
         public byte[] Image { get; set; }
@@ -15,5 +21,7 @@ namespace CreapediaWebApi.Models
         public int? Parentfolderid { get; set; }
 
         public virtual Folder Parentfolder { get; set; }
+        public virtual ICollection<Characteristic> Characteristics { get; set; }
+        public virtual ICollection<Elementlink> Elementlinks { get; set; }
     }
 }
