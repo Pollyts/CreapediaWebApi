@@ -11,30 +11,40 @@ namespace CreapediaWebApi.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class FoldersController : ControllerBase
+    public class TemplateFoldersController : ControllerBase
     {
         d2v9eis2ivh7hhContext db;
-        public FoldersController(d2v9eis2ivh7hhContext context)
+        public TemplateFoldersController(d2v9eis2ivh7hhContext context)
         {
             db = context;
         }
+        // GET: folders/5
 
         [HttpGet]
-        public async Task<ActionResult<Folder[]>> GetMainFolders(int userid)
-        {
-            Folder[] mfolders = await db.Folders.Where(x => x.Userid == userid&&x.Parentfolderid==null).ToArrayAsync();
-            if (mfolders == null)
-                return NotFound();
-            return mfolders;
-        }
+        //public async Task<ActionResult<Folder[]>> GetMainFolders(int userid)
+        //{
+        //    Folder[] mfolders = await db.Folders.Where(x => x.Userid == userid && x.Parentfolderid == null).ToArrayAsync();
+        //    if (mfolders == null)
+        //        return NotFound();
+        //    return mfolders;
+        //}
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Folder[]>> GetFoldersFromParent(int id)
+        public async Task<ActionResult<Templatefolder[]>> GetFoldersFromParent(int id)
         {
-            Folder[] folders = await db.Folders.Where(x => x.Parentfolderid == id).ToArrayAsync();
-            if (folders == null)
+            Templatefolder[] templatefolders;
+            if (id == 0)
+            {
+                id = await db.Templatefolders.Where(x => x.Parentfolderid == null).Select(x => x.Id).FirstAsync();
+            }
+            if (id == 0)
+            {
+                return null;
+            }
+            templatefolders = await db.Templatefolders.Where(x => x.Parentfolderid == id).ToArrayAsync();
+            if (templatefolders == null)
                 return NotFound();
-            return folders;
+            return templatefolders;
         }
 
         [HttpGet]
@@ -46,7 +56,7 @@ namespace CreapediaWebApi.Controllers
                 return BadRequest("Нет такого пользователя");
             else
             {
-                Folder import = await db.Folders.Where(x => x.Name == "Импорт" && x.Userid == user.Id && x.Parentfolderid==null).FirstOrDefaultAsync();
+                Folder import = await db.Folders.Where(x => x.Name == "Импорт" && x.Userid == user.Id && x.Parentfolderid == null).FirstOrDefaultAsync();
                 if (import == null)
                 {
                     import = new Folder()
@@ -154,6 +164,5 @@ namespace CreapediaWebApi.Controllers
 
             return folder;
         }
-
     }
 }

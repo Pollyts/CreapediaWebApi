@@ -11,24 +11,24 @@ namespace CreapediaWebApi.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class ElementsController : ControllerBase
+    public class TemplateElementsController : ControllerBase
     {
         d2v9eis2ivh7hhContext db;
-        public ElementsController(d2v9eis2ivh7hhContext context)
+        public TemplateElementsController(d2v9eis2ivh7hhContext context)
         {
             db = context;
         }
         //GET: elements/5
         // Возвращает список элементов в текущей папке
         [HttpGet("{id}")]
-        public async Task<ActionResult<Element[]>> GetElements(int id)
+        public async Task<ActionResult<Templateelement[]>> GetTemplateElements(int id)
         {
-            Element[] elements;
+            Templateelement[] elements;
             if (id == 0)
             {
-                id = await db.Folders.Where(x => x.Parentfolderid == null).Select(x => x.Id).FirstAsync();
+                id = await db.Templatefolders.Where(x => x.Parentfolderid == null).Select(x => x.Id).FirstAsync();
             }
-            elements = await db.Elements.Where(x => x.Parentfolderid == id).ToArrayAsync();
+            elements = await db.Templateelements.Where(x => x.Parentfolderid == id).ToArrayAsync();            
             if (elements == null)
                 return NotFound();
             return elements;
@@ -48,7 +48,7 @@ namespace CreapediaWebApi.Controllers
             }
             return listofcharacteristics.ToArray();
         }
-        
+
         public async Task GetTemplatesFromChild(int childid)
         {
             //Найти все характеристики
@@ -70,11 +70,11 @@ namespace CreapediaWebApi.Controllers
             //Найти всех родителей
             Templatelink[] templatelinks = await db.Templatelinks.Where(x => x.Childelementid == childid).ToArrayAsync();
             //Рекурсия по родителям
-            foreach(Templatelink tl in templatelinks)
+            foreach (Templatelink tl in templatelinks)
             {
                 await GetTemplatesFromChild(tl.Parenttelementid);
             }
-            
+
         }
         //public async Task<ActionResult<Characteristic[]>> GetElement(int idelement)
         //{
