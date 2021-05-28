@@ -20,7 +20,7 @@ namespace CreapediaWebApi.Controllers
         }
         // GET: folders/5
 
-        [HttpGet]
+        //[HttpGet]
         //public async Task<ActionResult<Folder[]>> GetMainFolders(int userid)
         //{
         //    Folder[] mfolders = await db.Folders.Where(x => x.Userid == userid && x.Parentfolderid == null).ToArrayAsync();
@@ -30,7 +30,7 @@ namespace CreapediaWebApi.Controllers
         //}
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Templatefolder[]>> GetFoldersFromParent(int id)
+        public async Task<ActionResult<Templatefolder[]>> GetTemplateFoldersFromParent(int id)
         {
             Templatefolder[] templatefolders;
             if (id == 0)

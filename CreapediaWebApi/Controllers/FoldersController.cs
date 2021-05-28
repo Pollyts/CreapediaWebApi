@@ -19,19 +19,28 @@ namespace CreapediaWebApi.Controllers
             db = context;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<Folder[]>> GetMainFolders(int userid)
-        {
-            Folder[] mfolders = await db.Folders.Where(x => x.Userid == userid&&x.Parentfolderid==null).ToArrayAsync();
-            if (mfolders == null)
-                return NotFound();
-            return mfolders;
-        }
+        //[HttpGet]
+        //public async Task<ActionResult<Folder[]>> GetMainFolders(int userid)
+        //{
+        //    Folder[] mfolders = await db.Folders.Where(x => x.Userid == userid&&x.Parentfolderid==null).ToArrayAsync();
+        //    if (mfolders == null)
+        //        return NotFound();
+        //    return mfolders;
+        //}
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Folder[]>> GetFoldersFromParent(int id)
         {
-            Folder[] folders = await db.Folders.Where(x => x.Parentfolderid == id).ToArrayAsync();
+            Folder[] folders;
+            if (id == 0)
+            {
+                id = await db.Folders.Where(x => x.Parentfolderid == null).Select(x => x.Id).FirstAsync();
+            }
+            if (id == 0)
+            {
+                return null;
+            }
+            folders = await db.Folders.Where(x => x.Parentfolderid == id).ToArrayAsync();
             if (folders == null)
                 return NotFound();
             return folders;
