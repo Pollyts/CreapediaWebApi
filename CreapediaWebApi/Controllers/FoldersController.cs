@@ -28,21 +28,23 @@ namespace CreapediaWebApi.Controllers
         //    return mfolders;
         //}
 
+        [HttpGet]
+        [Route("/folders/main/{userid}")]
+        public async Task<ActionResult<MainComponent[]>> GetMainComponents(int userid)
+        {
+            List<MainComponent> maincomponents = new List<MainComponent>();
+            Folder mainfolder = await db.Folders.Where(x => x.Parentfolderid == null && x.Userid == userid).FirstAsync();
+            Templatefolder maintfolder = await db.Templatefolders.Where(x => x.Parentfolderid == null && x.Userid == userid).FirstAsync();
+            maincomponents.Add(new MainComponent() { Id = mainfolder.Id, Userid = mainfolder.Userid, Name = mainfolder.Name });
+            maincomponents.Add(new MainComponent() { Id = maintfolder.Id, Userid = maintfolder.Userid, Name = maintfolder.Name });
+            return maincomponents.ToArray();
+        }
+
         [HttpGet("{id}")]
-        public async Task<ActionResult<Folder[]>> GetFoldersFromParent(int id)
+        public async Task<ActionResult<Folder[]>> GetFoldersFromParent(int id, int iduser)
         {
             Folder[] folders;
-            if (id == 0)
-            {
-                id = await db.Folders.Where(x => x.Parentfolderid == null).Select(x => x.Id).FirstAsync();
-            }
-            if (id == 0)
-            {
-                return null;
-            }
             folders = await db.Folders.Where(x => x.Parentfolderid == id).ToArrayAsync();
-            if (folders == null)
-                return NotFound();
             return folders;
         }
 

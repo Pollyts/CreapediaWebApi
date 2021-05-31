@@ -19,7 +19,7 @@ namespace CreapediaWebApi.Models
         public int? Folderscount { get; set; }
         public int? Elementscount { get; set; }
         public int? Parentfolderid { get; set; }
-        public int? Userid { get; set; }
+        public int Userid { get; set; }
 
         public virtual Folder Parentfolder { get; set; }
         public virtual User User { get; set; }

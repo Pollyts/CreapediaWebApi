@@ -16,6 +16,16 @@ namespace CreapediaWebApi.Models
         public string NameCharacter { get; set; }
         public string ValueCharacter { get; set; }
     }
+    public class MainComponent
+    {
+        public MainComponent()
+        {
+
+        }
+        public int Id { get; set; }
+        public int Userid { get; set; }
+        public string Name { get; set; }
+    }
     public class ClientClasses
     {
     }

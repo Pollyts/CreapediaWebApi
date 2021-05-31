@@ -16,7 +16,7 @@ namespace CreapediaWebApi.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public int? Parentfolderid { get; set; }
-        public int? Userid { get; set; }
+        public int Userid { get; set; }
 
         public virtual Templatefolder Parentfolder { get; set; }
         public virtual User User { get; set; }
