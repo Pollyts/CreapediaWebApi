@@ -102,13 +102,23 @@ namespace CreapediaWebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task PostUser(User user)
         {
             db.Users.Add(user);
             await db.SaveChangesAsync();
             EmailService emailService = new EmailService();
             await emailService.SendEmailAsync(user.Mail, user.Id);
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            db.Folders.Add(new Folder()
+            {
+                Name="Проекты",
+                Userid=user.Id,
+            });
+            db.Templatefolders.Add(new Templatefolder()
+            {
+                Name = "Библиотека компонентов",
+                Userid = user.Id,
+            });
+            await db.SaveChangesAsync();            
         }
 
         // DELETE: api/Users/5

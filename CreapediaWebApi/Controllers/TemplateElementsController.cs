@@ -94,9 +94,9 @@ namespace CreapediaWebApi.Controllers
 
         //}
         [HttpPost]
-        public async Task<IActionResult> PostUser(Element telement)
+        public async Task<IActionResult> PostUser(Templateelement telement)
         {
-            db.Elements.Add(telement);
+            db.Templateelements.Add(telement);
             await db.SaveChangesAsync();
             return Ok();
         }
