@@ -29,6 +29,32 @@ namespace CreapediaWebApi.Controllers
         }
 
         [HttpGet]
+        [Route("/users/{userid}")]
+        public async Task<ActionResult<MainComponent[]>> GetMainComponents(int userid)
+        {
+            List<MainComponent> maincomponents = new List<MainComponent>();
+            Folder mainfolder = await db.Folders.Where(x => x.Parentfolderid == null && x.Userid == userid).FirstAsync();
+            Templatefolder maintfolder = await db.Templatefolders.Where(x => x.Parentfolderid == null && x.Userid == userid).FirstAsync();
+            maincomponents.Add(new MainComponent() { Id = mainfolder.Id, Userid = mainfolder.Userid, Name = mainfolder.Name });
+            maincomponents.Add(new MainComponent() { Id = maintfolder.Id, Userid = maintfolder.Userid, Name = maintfolder.Name });
+            return maincomponents.ToArray();
+        }
+
+        [HttpGet]
+        [Route("/mailconfirm")]
+        public async Task<ContentResult> MailConfirm([FromQuery] string mail, [FromQuery] int name)
+        {
+            User user = await db.Users.FirstOrDefaultAsync(x => x.Id == name && x.Mail == mail);
+            if (user != null)
+            {
+                user.Mailconfirm = true;
+                db.Entry(user).State = EntityState.Modified;
+                await db.SaveChangesAsync();
+            }
+            return base.Content("<div>Адрес почты успешно подтвержден. <a href='http://localhost:3000/'>Вернуться на главную страницу приложения</a></div>", "text/html", System.Text.Encoding.UTF8);
+        }
+
+        [HttpGet]
         public async Task<object> GetUser(string? mail, string? pass)
         {
             //if (mail != null)
@@ -80,6 +106,8 @@ namespace CreapediaWebApi.Controllers
         {
             db.Users.Add(user);
             await db.SaveChangesAsync();
+            EmailService emailService = new EmailService();
+            await emailService.SendEmailAsync(user.Mail, user.Id);
             return CreatedAtAction("GetUser", new { id = user.Id }, user);
         }
 

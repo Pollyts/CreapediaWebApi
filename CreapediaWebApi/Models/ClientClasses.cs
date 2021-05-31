@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.IO;
 using System.Threading.Tasks;
+using System.Net.Mail;
 
 namespace CreapediaWebApi.Models
 {
@@ -26,7 +29,23 @@ namespace CreapediaWebApi.Models
         public int Userid { get; set; }
         public string Name { get; set; }
     }
-    public class ClientClasses
+
+    public class EmailService
+    {
+        public async Task SendEmailAsync(string mail, int userid)
+        {
+            MailAddress from = new MailAddress("mycreapedia@gmail.com", "Creapedia");
+            MailAddress to = new MailAddress(mail);
+            MailMessage m = new MailMessage(from, to);
+            m.Subject = "Подтверждение почты";
+            m.Body = "Для подтверждения почтового адреса, пожалуйста, перейдите по ссылке:" + $"https://localhost:44348/mailconfirm?mail={mail}&name={userid}";
+            SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
+            smtp.Credentials = new NetworkCredential("mycreapedia@gmail.com", "ayorgzyeodcyakrw");
+            smtp.EnableSsl = true;
+            await smtp.SendMailAsync(m);
+        }
+    }
+public class ClientClasses
     {
     }
 }
