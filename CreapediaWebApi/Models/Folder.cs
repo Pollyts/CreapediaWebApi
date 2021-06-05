@@ -15,11 +15,9 @@ namespace CreapediaWebApi.Models
 
         public int Id { get; set; }
         public string Name { get; set; }
-        public DateTime? Lastupdate { get; set; }
-        public int? Folderscount { get; set; }
-        public int? Elementscount { get; set; }
         public int? Parentfolderid { get; set; }
         public int Userid { get; set; }
+        public bool Ifpubic { get; set; }
 
         public virtual Folder Parentfolder { get; set; }
         public virtual User User { get; set; }

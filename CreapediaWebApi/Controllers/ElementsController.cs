@@ -35,7 +35,7 @@ namespace CreapediaWebApi.Controllers
             return elements;
         }
         [HttpPost]
-        public async Task<IActionResult> PostUserPic([FromForm] ElementWithImage el)
+        public async Task<IActionResult> PostElementWithImage([FromForm] ElementWithImage el)
         {
             Element element = new Element { Parentfolderid = el.parentfolderid, Name = el.Name };
             if (el.Name == null)

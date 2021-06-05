@@ -102,12 +102,20 @@ namespace CreapediaWebApi.Controllers
         }
 
         [HttpPost]
-        public async Task PostUser(User user)
+        public async Task<object> PostUser(User user)
         {
-            db.Users.Add(user);
+            //проверка на наличие электронной почты в БД
+            User u = await db.Users.Where(x => x.Mail == user.Mail).FirstOrDefaultAsync();
+            if (u==null)
+                //пользователь найден
+                return BadRequest("Пользователь с таким адресом электронной почты уже зарегистрирован");
+            // сохранение в БД
+            db.Users.Add(user);            
             await db.SaveChangesAsync();
+            // отправление письма на почту
             EmailService emailService = new EmailService();
             await emailService.SendEmailAsync(user.Mail, user.Id);
+            // добавление корневых папок
             db.Folders.Add(new Folder()
             {
                 Name="Проекты",
@@ -117,8 +125,9 @@ namespace CreapediaWebApi.Controllers
             {
                 Name = "Библиотека",
                 Userid = user.Id,
-            });
-            await db.SaveChangesAsync();            
+            });            
+            await db.SaveChangesAsync();
+            return Ok();
         }
 
         // DELETE: api/Users/5

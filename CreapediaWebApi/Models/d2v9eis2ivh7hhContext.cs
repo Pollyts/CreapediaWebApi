@@ -21,6 +21,7 @@ namespace CreapediaWebApi.Models
         public virtual DbSet<Element> Elements { get; set; }
         public virtual DbSet<Elementlink> Elementlinks { get; set; }
         public virtual DbSet<Folder> Folders { get; set; }
+        public virtual DbSet<Relation> Relations { get; set; }
         public virtual DbSet<Templatecharacteristic> Templatecharacteristics { get; set; }
         public virtual DbSet<Templateelement> Templateelements { get; set; }
         public virtual DbSet<Templatefolder> Templatefolders { get; set; }
@@ -69,11 +70,9 @@ namespace CreapediaWebApi.Models
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.Chatacteristicscount).HasColumnName("chatacteristicscount");
+                entity.Property(e => e.Ifpubic).HasColumnName("ifpubic");
 
                 entity.Property(e => e.Image).HasColumnName("image");
-
-                entity.Property(e => e.Lastupdate).HasColumnName("lastupdate");
 
                 entity.Property(e => e.Name)
                     .HasMaxLength(30)
@@ -117,11 +116,7 @@ namespace CreapediaWebApi.Models
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.Elementscount).HasColumnName("elementscount");
-
-                entity.Property(e => e.Folderscount).HasColumnName("folderscount");
-
-                entity.Property(e => e.Lastupdate).HasColumnName("lastupdate");
+                entity.Property(e => e.Ifpubic).HasColumnName("ifpubic");
 
                 entity.Property(e => e.Name)
                     .HasMaxLength(30)
@@ -142,6 +137,37 @@ namespace CreapediaWebApi.Models
                     .HasForeignKey(d => d.Userid)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("folders_userid_fkey");
+            });
+
+            modelBuilder.Entity<Relation>(entity =>
+            {
+                entity.ToTable("relations");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Firstelementid).HasColumnName("firstelementid");
+
+                entity.Property(e => e.Rel1to2)
+                    .HasMaxLength(50)
+                    .HasColumnName("rel1to2");
+
+                entity.Property(e => e.Rel2to1)
+                    .HasMaxLength(50)
+                    .HasColumnName("rel2to1");
+
+                entity.Property(e => e.Secondelementid).HasColumnName("secondelementid");
+
+                entity.HasOne(d => d.Firstelement)
+                    .WithMany(p => p.RelationFirstelements)
+                    .HasForeignKey(d => d.Firstelementid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("relations_firstelementid_fkey");
+
+                entity.HasOne(d => d.Secondelement)
+                    .WithMany(p => p.RelationSecondelements)
+                    .HasForeignKey(d => d.Secondelementid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("relations_secondelementid_fkey");
             });
 
             modelBuilder.Entity<Templatecharacteristic>(entity =>
@@ -173,6 +199,8 @@ namespace CreapediaWebApi.Models
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
+                entity.Property(e => e.Ifpubic).HasColumnName("ifpubic");
+
                 entity.Property(e => e.Name)
                     .HasMaxLength(50)
                     .HasColumnName("name");
@@ -191,6 +219,8 @@ namespace CreapediaWebApi.Models
                 entity.ToTable("templatefolders");
 
                 entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Ifpubic).HasColumnName("ifpubic");
 
                 entity.Property(e => e.Name)
                     .HasMaxLength(50)
