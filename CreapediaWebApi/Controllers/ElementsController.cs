@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CreapediaWebApi.Models;
+using System.IO;
 
 namespace CreapediaWebApi.Controllers
 {
@@ -33,6 +34,22 @@ namespace CreapediaWebApi.Controllers
                 return NotFound();
             return elements;
         }
+        [HttpPost]
+        public async Task<IActionResult> PostUserPic([FromForm] ElementWithImage el)
+        {
+            Element element = new Element { Parentfolderid = el.parentfolderid, Name = el.Name };
+            if (el.Name == null)
+                return Ok();
+            byte[] imageData = null;
+            using (var binaryReader = new BinaryReader(el.Image.OpenReadStream()))
+            {
+                imageData = binaryReader.ReadBytes((int)el.Image.Length);
+            }
+            element.Image = imageData;
+            db.Elements.Add(element);
+            await db.SaveChangesAsync();
+            return Ok();
+        }
         //public static List<FullCharacteristic> listofcharacteristics;
 
         ////get /elements?idelement=5
@@ -48,7 +65,7 @@ namespace CreapediaWebApi.Controllers
         //    }
         //    return listofcharacteristics.ToArray();
         //}
-        
+
         //public async Task GetTemplatesFromChild(int childid)
         //{
         //    //Найти все характеристики
@@ -74,14 +91,14 @@ namespace CreapediaWebApi.Controllers
         //    {
         //        await GetTemplatesFromChild(tl.Parenttelementid);
         //    }
-            
+
         //}
-        [HttpPost]
-        public async Task<IActionResult> PostUser(Element telement)
-        {
-            db.Elements.Add(telement);
-            await db.SaveChangesAsync();
-            return Ok();
-        }
+        //[HttpPost]
+        //public async Task<IActionResult> PostUser(Element telement)
+        //{
+        //    db.Elements.Add(telement);
+        //    await db.SaveChangesAsync();
+        //    return Ok();
+        //}
     }
 }

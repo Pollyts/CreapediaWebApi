@@ -115,7 +115,7 @@ namespace CreapediaWebApi.Controllers
             });
             db.Templatefolders.Add(new Templatefolder()
             {
-                Name = "Библиотека компонентов",
+                Name = "Библиотека",
                 Userid = user.Id,
             });
             await db.SaveChangesAsync();            

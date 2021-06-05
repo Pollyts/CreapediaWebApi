@@ -115,9 +115,15 @@ namespace CreapediaWebApi.Controllers
 
         }
         [HttpPost]
-        public async Task<IActionResult> PostTfolder(Folder tfolder)
+        public async Task<IActionResult> PostTfolder(Templatefolder tfolder)
         {
-            db.Folders.Add(tfolder);
+            Templatefolder parentfolder = await db.Templatefolders.Where(x => x.Id == tfolder.Parentfolderid).FirstAsync();
+            db.Templatefolders.Add(new Templatefolder
+            { 
+            Name=tfolder.Name,
+            Parentfolderid=parentfolder.Id,
+            Userid = parentfolder.Userid
+            });
             await db.SaveChangesAsync();
             return Ok();
         }

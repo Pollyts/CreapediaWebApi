@@ -5,6 +5,7 @@ using System.Net;
 using System.IO;
 using System.Threading.Tasks;
 using System.Net.Mail;
+using Microsoft.AspNetCore.Http;
 
 namespace CreapediaWebApi.Models
 {
@@ -18,6 +19,15 @@ namespace CreapediaWebApi.Models
         public int IdCharacter { get; set; }
         public string NameCharacter { get; set; }
         public string ValueCharacter { get; set; }
+    }
+    public class ElementWithImage
+    {
+        public int parentfolderid { get; set; }
+        public string Name { get; set; }
+        public IFormFile Image { get; set; }
+        //public string FileName { get; set; }
+
+        //public IFormFile Image { get; set; }
     }
     public class MainComponent
     {
