@@ -9,6 +9,17 @@ using Microsoft.AspNetCore.Http;
 
 namespace CreapediaWebApi.Models
 {
+    public class BodyofBreadCrumb
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+    public class BreadCrumb
+    {        
+        public string title { get; set; }
+        public string path { get; set; }               
+        public BodyofBreadCrumb body { get; set; }
+    }
     public class FullCharacteristic{
         public FullCharacteristic()
         {
@@ -23,7 +34,7 @@ namespace CreapediaWebApi.Models
     public class ElementWithImage
     {
         public int parentfolderid { get; set; }
-        public string Name { get; set; }
+        //public string Name { get; set; }
         public IFormFile Image { get; set; }
         //public string FileName { get; set; }
 

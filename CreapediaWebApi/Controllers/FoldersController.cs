@@ -131,32 +131,13 @@ namespace CreapediaWebApi.Controllers
             return Ok();
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutTFolder(int id, Folder folder)
+        [HttpPut]
+        public async Task<IActionResult> PutFolder(Folder f)
         {
-            if (id != folder.Id)
-            {
-                return BadRequest();
-            }
-
+            Folder folder=await db.Folders.Where(x => x.Id == f.Id).FirstAsync();
+            folder.Name = f.Name;
             db.Entry(folder).State = EntityState.Modified;
-
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!db.Folders.Any(e => e.Id == id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await db.SaveChangesAsync();
             return NoContent();
         }
 
