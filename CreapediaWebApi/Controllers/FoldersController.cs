@@ -40,6 +40,7 @@ namespace CreapediaWebApi.Controllers
             return maincomponents.ToArray();
         }
 
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Folder[]>> GetFoldersFromParent(int id, int iduser)
         {
@@ -49,10 +50,10 @@ namespace CreapediaWebApi.Controllers
         }
 
         [HttpGet]
-        [Route("/folders/export")]
-        public async Task<IActionResult> ExportFolder(string? mail, int folderid)
+        [Route("/folders/exporttouser")]
+        public async Task<IActionResult> ExportToUser(int folderid, string usermail)
         {
-            User user = await db.Users.Where(x => x.Mail == mail).FirstAsync();
+            User user = await db.Users.Where(x => x.Mail == usermail).FirstAsync();
             if (user == null)
                 return BadRequest("Нет такого пользователя");
             else
@@ -115,9 +116,65 @@ namespace CreapediaWebApi.Controllers
                 }
 
         }
-        [HttpPost]
+        public static List<Characteristic> listofcharacteristics;
 
-        
+        public async Task AddCharacteristics(int oldelement, int newelement)
+        {
+            listofcharacteristics = new List<Characteristic>();
+            Characteristic[] chars = await db.Characteristics.Where(x => x.Elementid == oldelement).ToArrayAsync();
+            if (chars.Length > 0)
+                foreach (Characteristic c in chars)
+                {
+                    Characteristic newcharacteristic = new Characteristic()
+                    {
+                        Value=c.Value,                        
+                        Name = c.Name,
+                        Elementid = newelement,
+                    };
+                    listofcharacteristics.Add(newcharacteristic);
+                }
+            Elementlink[] elementlinks = await db.Elementlinks.Where(x => x.Childelementid == oldelement).ToArrayAsync();
+            foreach (Elementlink el in elementlinks)
+            {
+                await GetTemplateCharacteristicsFromChild(el.Parenttelementid, newelement);
+            }
+            foreach(Characteristic c in listofcharacteristics)
+            {
+                db.Characteristics.Add(c);                
+            }
+            await db.SaveChangesAsync();
+        }    
+
+        public async Task GetTemplateCharacteristicsFromChild(int childid, int newelementid)
+        {
+            //Найти все характеристики
+            Templatecharacteristic[] templatecharacteristics = await db.Templatecharacteristics.Where(x => x.Telementid == childid).ToArrayAsync();
+            Templateelement currentelement = await db.Templateelements.Where(x => x.Id == childid).FirstAsync();
+            //Добавить характеристики родителя
+            foreach (Templatecharacteristic tc in templatecharacteristics)
+            {
+                Characteristic c = new Characteristic()
+                {
+                    Name = tc.Name,
+                    Value=tc.Value,
+                    Elementid=newelementid
+                };
+                listofcharacteristics.Add(c);
+            }
+            //Найти всех родителей
+            Templatelink[] templatelinks = await db.Templatelinks.Where(x => x.Childelementid == childid).ToArrayAsync();
+            //Рекурсия по родителям
+            foreach (Templatelink tl in templatelinks)
+            {
+                await GetTemplateCharacteristicsFromChild(tl.Parenttelementid, newelementid);
+            }
+
+        }
+
+
+
+
+        [HttpPost]       
         public async Task<IActionResult> PostFolder(Folder folder)
         {
             Folder parentfolder = await db.Folders.Where(x => x.Id == folder.Parentfolderid).FirstAsync();
