@@ -14,6 +14,18 @@ namespace CreapediaWebApi.Models
         public int Id { get; set; }
         public string Name { get; set; }
     }
+    public class SetOfNewCharacteristics
+    {
+        public NewCharacteristic[] characteristics { get; set; }
+        public int elementid { get; set; }
+    }
+
+    public class NewCharacteristic
+    {
+        public string Name { get; set; }
+        public string Value { get; set; }
+        public int Id { get; set; }
+    }
     public class BreadCrumb
     {        
         public string title { get; set; }

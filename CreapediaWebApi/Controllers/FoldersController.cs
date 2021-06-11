@@ -58,14 +58,16 @@ namespace CreapediaWebApi.Controllers
                 return BadRequest("Нет такого пользователя");
             else
             {
-                Folder import = await db.Folders.Where(x => x.Name == "Импорт" && x.Userid == user.Id && x.Parentfolderid==null).FirstOrDefaultAsync();
+                Folder Projects = await db.Folders.Where(x => x.Userid == user.Id && x.Parentfolderid == null).FirstOrDefaultAsync();
+                Folder import = await db.Folders.Where(x => x.Name == "Импорт" && x.Userid == user.Id && x.Parentfolderid==Projects.Id).FirstOrDefaultAsync();
                 if (import == null)
                 {
                     import = new Folder()
                     {
                         Name = "Импорт",
-                        Userid = user.Id
-                    };
+                        Userid = user.Id,
+                        Parentfolderid=Projects.Id
+                };
                     db.Folders.Add(import);
                 }
                 await db.SaveChangesAsync();
@@ -73,17 +75,18 @@ namespace CreapediaWebApi.Controllers
                 Folder newfolder = new Folder()
                 {
                     Name = oldfolder.Name,
-                    Parentfolderid = import.Id
+                    Parentfolderid = import.Id,
+                    Userid=user.Id
                 };
                 db.Folders.Add(newfolder);
                 await db.SaveChangesAsync();
-                await AddFolders(oldfolder.Id, newfolder.Id);
+                await AddFolders(oldfolder.Id, newfolder.Id, user.Id);
                 await AddElements(oldfolder.Id, newfolder.Id);
                 return Ok();
             }
         }
 
-        public async Task AddFolders(int oldparentfolder, int newparentfolder)
+        public async Task AddFolders(int oldparentfolder, int newparentfolder, int userid)
         {
             Folder[] tfolders = await db.Folders.Where(x => x.Parentfolderid == oldparentfolder).ToArrayAsync();
             if (tfolders.Length > 0)
@@ -92,11 +95,12 @@ namespace CreapediaWebApi.Controllers
                     Folder newfolder = new Folder()
                     {
                         Name = t.Name,
-                        Parentfolderid = newparentfolder
+                        Parentfolderid = newparentfolder,
+                        Userid=userid
                     };
                     db.Folders.Add(newfolder);
                     await db.SaveChangesAsync();
-                    await AddFolders(t.Id, newfolder.Id);
+                    await AddFolders(t.Id, newfolder.Id,userid);
                     await AddElements(t.Id, newfolder.Id);
                 }
         }
@@ -110,8 +114,15 @@ namespace CreapediaWebApi.Controllers
                     {
                         Name = el.Name,
                         Parentfolderid = newparentfolder,
+                        Image=el.Image
                     };
                     db.Elements.Add(newelement);
+                    await db.SaveChangesAsync();
+                    await AddCharacteristics(el.Id, newelement.Id);
+                    foreach (Characteristic c in listofcharacteristics)
+                    {
+                        db.Characteristics.Add(c);
+                    }
                     await db.SaveChangesAsync();
                 }
 
@@ -137,12 +148,7 @@ namespace CreapediaWebApi.Controllers
             foreach (Elementlink el in elementlinks)
             {
                 await GetTemplateCharacteristicsFromChild(el.Parenttelementid, newelement);
-            }
-            foreach(Characteristic c in listofcharacteristics)
-            {
-                db.Characteristics.Add(c);                
-            }
-            await db.SaveChangesAsync();
+            }            
         }    
 
         public async Task GetTemplateCharacteristicsFromChild(int childid, int newelementid)

@@ -106,7 +106,7 @@ namespace CreapediaWebApi.Controllers
         {
             //проверка на наличие электронной почты в БД
             User u = await db.Users.Where(x => x.Mail == user.Mail).FirstOrDefaultAsync();
-            if (u==null)
+            if (u!=null)
                 //пользователь найден
                 return BadRequest("Пользователь с таким адресом электронной почты уже зарегистрирован");
             // сохранение в БД

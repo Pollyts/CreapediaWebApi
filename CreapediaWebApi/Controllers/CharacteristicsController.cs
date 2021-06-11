@@ -72,5 +72,20 @@ namespace CreapediaWebApi.Controllers
             }
 
         }
+        [HttpPost]
+        public async Task<IActionResult> PostCharacteristics(SetOfNewCharacteristics set)
+        {
+            foreach (NewCharacteristic nc in set.characteristics)
+            {
+                db.Characteristics.Add(new Characteristic
+                {
+                    Name = nc.Name,
+                    Value = nc.Value,
+                    Elementid = set.elementid
+                });
+            }            
+            await db.SaveChangesAsync();
+            return Ok();
+        }
     }
 }
