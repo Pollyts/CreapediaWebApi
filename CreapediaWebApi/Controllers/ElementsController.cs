@@ -136,5 +136,23 @@ namespace CreapediaWebApi.Controllers
             await db.SaveChangesAsync();
             return Ok();
         }
+
+        [HttpPost]
+        [Route("/elements/relation1")]
+        public async Task<IActionResult> PostRelation1(Relation rel)
+        {
+            db.Relations.Add(rel);
+            await db.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("/elements/relation2")]
+        public async Task<IActionResult> PostRelation2(Relation rel)
+        {
+            db.Relations.Add(rel);
+            await db.SaveChangesAsync();
+            return Ok();
+        }
     }
 }
