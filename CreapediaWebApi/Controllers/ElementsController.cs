@@ -137,22 +137,19 @@ namespace CreapediaWebApi.Controllers
             return Ok();
         }
 
-        [HttpPost]
-        [Route("/elements/relation1")]
-        public async Task<IActionResult> PostRelation1(Relation rel)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Element>> DeleteElement(int id)
         {
-            db.Relations.Add(rel);
+            var element = await db.Elements.FindAsync(id);
+            if (element == null)
+            {
+                return NotFound();
+            }
+            db.Elements.Remove(element);
             await db.SaveChangesAsync();
-            return Ok();
+            return element;
         }
 
-        [HttpPost]
-        [Route("/elements/relation2")]
-        public async Task<IActionResult> PostRelation2(Relation rel)
-        {
-            db.Relations.Add(rel);
-            await db.SaveChangesAsync();
-            return Ok();
-        }
+
     }
 }

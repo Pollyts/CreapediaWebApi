@@ -160,13 +160,11 @@ namespace CreapediaWebApi.Models
                 entity.HasOne(d => d.Firstelement)
                     .WithMany(p => p.RelationFirstelements)
                     .HasForeignKey(d => d.Firstelementid)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("relations_firstelementid_fkey");
 
                 entity.HasOne(d => d.Secondelement)
                     .WithMany(p => p.RelationSecondelements)
                     .HasForeignKey(d => d.Secondelementid)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("relations_secondelementid_fkey");
             });
 

@@ -19,6 +19,15 @@ namespace CreapediaWebApi.Models
         public NewCharacteristic[] characteristics { get; set; }
         public int elementid { get; set; }
     }
+    public class FullRelation
+    {
+        public string NameFirstElement { get; set; }
+        public string NameSecondElement { get; set; }
+        public int IdFirst { get; set; }
+        public int IdSecond { get; set; }
+        public string Rel1to2 { get; set; }
+        public string Rel2to1 { get; set; }
+    }
 
     public class NewCharacteristic
     {
