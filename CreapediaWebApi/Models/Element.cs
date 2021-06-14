@@ -18,7 +18,7 @@ namespace CreapediaWebApi.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public byte[] Image { get; set; }
-        public int? Parentfolderid { get; set; }
+        public int Parentfolderid { get; set; }
         public bool Ifpubic { get; set; }
 
         public virtual Folder Parentfolder { get; set; }

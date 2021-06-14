@@ -86,6 +86,63 @@ namespace CreapediaWebApi.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("/folders/exporttofolder")]
+        public async Task<IActionResult> ExportToFolder(int folderid, int newrootid)
+        {
+                Folder newroot = await db.Folders.Where(x => x.Id == newrootid).FirstOrDefaultAsync();
+                Folder oldfolder = await db.Folders.Where(x => x.Id == folderid).FirstAsync();
+                Folder newfolder = new Folder()
+                {
+                    Name = oldfolder.Name,
+                    Parentfolderid = newrootid,
+                    Userid = oldfolder.Userid
+                };
+                db.Folders.Add(newfolder);
+                await db.SaveChangesAsync();
+                await AddFolders(oldfolder.Id, newfolder.Id, oldfolder.Userid);
+                await AddElements(oldfolder.Id, newfolder.Id);
+                return Ok();            
+        }
+
+        [HttpGet]
+        [Route("/folders/exporttolibrary")]
+        public async Task<IActionResult> ExportToLibrary(int folderid, string password)
+        {
+            //User user = await db.Users.Where(x => x.Mail == usermail).FirstAsync();
+            //if (user == null)
+            //    return BadRequest("Нет такого пользователя");
+            //else
+            //{
+            //    Folder Projects = await db.Folders.Where(x => x.Userid == user.Id && x.Parentfolderid == null).FirstOrDefaultAsync();
+            //    Folder import = await db.Folders.Where(x => x.Name == "Импорт" && x.Userid == user.Id && x.Parentfolderid == Projects.Id).FirstOrDefaultAsync();
+            //    if (import == null)
+            //    {
+            //        import = new Folder()
+            //        {
+            //            Name = "Импорт",
+            //            Userid = user.Id,
+            //            Parentfolderid = Projects.Id
+            //        };
+            //        db.Folders.Add(import);
+            //    }
+            //    await db.SaveChangesAsync();
+            //    Folder oldfolder = await db.Folders.Where(x => x.Id == folderid).FirstAsync();
+            //    Folder newfolder = new Folder()
+            //    {
+            //        Name = oldfolder.Name,
+            //        Parentfolderid = import.Id,
+            //        Userid = user.Id
+            //    };
+            //    db.Folders.Add(newfolder);
+            //    await db.SaveChangesAsync();
+            //    await AddFolders(oldfolder.Id, newfolder.Id, user.Id);
+            //    await AddElements(oldfolder.Id, newfolder.Id);
+            //    return Ok();
+            //}
+            return Ok();
+        }
+
         public async Task AddFolders(int oldparentfolder, int newparentfolder, int userid)
         {
             Folder[] tfolders = await db.Folders.Where(x => x.Parentfolderid == oldparentfolder).ToArrayAsync();
@@ -238,3 +295,4 @@ namespace CreapediaWebApi.Controllers
 
     }
 }
+

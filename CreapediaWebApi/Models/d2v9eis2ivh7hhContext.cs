@@ -21,6 +21,7 @@ namespace CreapediaWebApi.Models
         public virtual DbSet<Element> Elements { get; set; }
         public virtual DbSet<Elementlink> Elementlinks { get; set; }
         public virtual DbSet<Folder> Folders { get; set; }
+        public virtual DbSet<Library> Libraries { get; set; }
         public virtual DbSet<Relation> Relations { get; set; }
         public virtual DbSet<Templatecharacteristic> Templatecharacteristics { get; set; }
         public virtual DbSet<Templateelement> Templateelements { get; set; }
@@ -60,7 +61,6 @@ namespace CreapediaWebApi.Models
                 entity.HasOne(d => d.Element)
                     .WithMany(p => p.Characteristics)
                     .HasForeignKey(d => d.Elementid)
-                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("characteristics_elementid_fkey");
             });
 
@@ -83,7 +83,6 @@ namespace CreapediaWebApi.Models
                 entity.HasOne(d => d.Parentfolder)
                     .WithMany(p => p.Elements)
                     .HasForeignKey(d => d.Parentfolderid)
-                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("elements_parentfolderid_fkey");
             });
 
@@ -100,13 +99,11 @@ namespace CreapediaWebApi.Models
                 entity.HasOne(d => d.Childelement)
                     .WithMany(p => p.Elementlinks)
                     .HasForeignKey(d => d.Childelementid)
-                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("elementlinks_childelementid_fkey");
 
                 entity.HasOne(d => d.Parenttelement)
                     .WithMany(p => p.Elementlinks)
                     .HasForeignKey(d => d.Parenttelementid)
-                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("elementlinks_parenttelementid_fkey");
             });
 
@@ -135,8 +132,28 @@ namespace CreapediaWebApi.Models
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Folders)
                     .HasForeignKey(d => d.Userid)
-                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("folders_userid_fkey");
+            });
+
+            modelBuilder.Entity<Library>(entity =>
+            {
+                entity.ToTable("library");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Componentid).HasColumnName("componentid");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(30)
+                    .HasColumnName("name");
+
+                entity.Property(e => e.Password)
+                    .HasMaxLength(30)
+                    .HasColumnName("password");
+
+                entity.Property(e => e.Typeofcomponent)
+                    .HasMaxLength(30)
+                    .HasColumnName("typeofcomponent");
             });
 
             modelBuilder.Entity<Relation>(entity =>
@@ -187,7 +204,6 @@ namespace CreapediaWebApi.Models
                 entity.HasOne(d => d.Telement)
                     .WithMany(p => p.Templatecharacteristics)
                     .HasForeignKey(d => d.Telementid)
-                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("templatecharacteristics_telementid_fkey");
             });
 
@@ -208,7 +224,6 @@ namespace CreapediaWebApi.Models
                 entity.HasOne(d => d.Parentfolder)
                     .WithMany(p => p.Templateelements)
                     .HasForeignKey(d => d.Parentfolderid)
-                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("templateelements_parentfolderid_fkey");
             });
 
@@ -237,7 +252,6 @@ namespace CreapediaWebApi.Models
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Templatefolders)
                     .HasForeignKey(d => d.Userid)
-                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("templatefolders_userid_fkey");
             });
 
@@ -254,13 +268,11 @@ namespace CreapediaWebApi.Models
                 entity.HasOne(d => d.Childelement)
                     .WithMany(p => p.TemplatelinkChildelements)
                     .HasForeignKey(d => d.Childelementid)
-                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("templatelinks_childelementid_fkey");
 
                 entity.HasOne(d => d.Parenttelement)
                     .WithMany(p => p.TemplatelinkParenttelements)
                     .HasForeignKey(d => d.Parenttelementid)
-                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("templatelinks_parenttelementid_fkey");
             });
 
