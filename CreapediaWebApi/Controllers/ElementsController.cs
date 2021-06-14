@@ -35,10 +35,10 @@ namespace CreapediaWebApi.Controllers
             return elements;
         }
         [HttpPost]
-        [Route("/elements/image")]
-        public async Task<IActionResult> PostElementWithImage([FromForm] ElementWithImage el)
+        [Route("/elements/image/{id}")]
+        public async Task<IActionResult> PostElementWithImage(int id, [FromForm] ElementWithImage el)
         {
-            Element element = await db.Elements.Where(x => x.Parentfolderid == el.parentfolderid).FirstOrDefaultAsync();
+            Element element = await db.Elements.Where(x => x.Id == id).FirstOrDefaultAsync();
             if (element == null)
                 return Ok();
             byte[] imageData = null;
@@ -130,11 +130,11 @@ namespace CreapediaWebApi.Controllers
 
         }
         [HttpPost]
-        public async Task<IActionResult> PostElement(Element telement)
+        public async Task<ActionResult<int>> PostElement(Element telement)
         {
             db.Elements.Add(telement);
             await db.SaveChangesAsync();
-            return Ok();
+            return telement.Id;
         }
 
         [HttpDelete("{id}")]

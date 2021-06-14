@@ -14,6 +14,14 @@ namespace CreapediaWebApi.Models
         public int Id { get; set; }
         public string Name { get; set; }
     }
+    public class FolderForEdit
+    {
+        public int IdFolder { get; set; }
+        public string Name { get; set; }
+        public int IdParent { get; set; }
+        public Folder [] subfolders { get; set; }
+        public Element [] elements { get; set; }
+    }
     public class SetOfNewCharacteristics
     {
         public NewCharacteristic[] characteristics { get; set; }

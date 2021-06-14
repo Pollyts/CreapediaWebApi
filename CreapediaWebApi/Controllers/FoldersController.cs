@@ -195,12 +195,12 @@ namespace CreapediaWebApi.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> PutFolder(Folder f)
+        public async Task<IActionResult> PutFolder(FolderForEdit editfolder)
         {
-            Folder folder=await db.Folders.Where(x => x.Id == f.Id).FirstAsync();
-            folder.Name = f.Name;
-            db.Entry(folder).State = EntityState.Modified;
-            await db.SaveChangesAsync();
+            //Folder folder=await db.Folders.Where(x => x.Id == f.Id).FirstAsync();
+            //folder.Name = f.Name;
+            //db.Entry(folder).State = EntityState.Modified;
+            //await db.SaveChangesAsync();
             return NoContent();
         }
 
