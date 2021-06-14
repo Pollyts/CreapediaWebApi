@@ -197,10 +197,28 @@ namespace CreapediaWebApi.Controllers
         [HttpPut]
         public async Task<IActionResult> PutFolder(FolderForEdit editfolder)
         {
-            //Folder folder=await db.Folders.Where(x => x.Id == f.Id).FirstAsync();
-            //folder.Name = f.Name;
-            //db.Entry(folder).State = EntityState.Modified;
-            //await db.SaveChangesAsync();
+            Folder folder = await db.Folders.Where(x => x.Id == editfolder.IdFolder).FirstAsync();
+            folder.Name = editfolder.Name;
+            folder.Parentfolderid = editfolder.IdParent;
+            db.Entry(folder).State = EntityState.Modified;
+            List <Folder> subfolders = await db.Folders.Where(x => x.Parentfolderid==editfolder.IdFolder).ToListAsync();
+            foreach(Folder f in subfolders)
+            {
+                if (!Array.Exists(editfolder.subfolders, x => x.Id==f.Id))
+                {
+                    db.Folders.Remove(f);
+                }
+            }
+            await db.SaveChangesAsync();
+            Element[] elements = await db.Elements.Where(x => x.Parentfolderid == editfolder.IdFolder).ToArrayAsync();
+            foreach (Element e in elements)
+            {
+                if (!Array.Exists(editfolder.elements, x => x.Id == e.Id))
+                {
+                    db.Elements.Remove(e);
+                }
+            }
+            await db.SaveChangesAsync();
             return NoContent();
         }
 
