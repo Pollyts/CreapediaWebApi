@@ -34,6 +34,20 @@ namespace CreapediaWebApi.Controllers
                 return NotFound();
             return elements;
         }
+
+        [HttpGet]
+        [Route("/elements/templatefolder")]
+        public async Task<IActionResult> SetTemplateElement(int templateid, int elementid)
+        {
+            db.Elementlinks.Add(new Elementlink()
+            {
+                Parenttelementid = templateid,
+                Childelementid = elementid
+            });
+            await db.SaveChangesAsync();
+            return Ok();
+        }
+
         [HttpPost]
         [Route("/elements/image/{id}")]
         public async Task<IActionResult> PostElementWithImage(int id, [FromForm] ElementWithImage el)
