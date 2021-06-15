@@ -40,6 +40,8 @@ namespace CreapediaWebApi.Controllers
             return folders;
         }
 
+        
+
         [HttpGet]
         [Route("/folders/exporttouser")]
         public async Task<IActionResult> ExportToUser(int folderid, string usermail)
@@ -105,11 +107,102 @@ namespace CreapediaWebApi.Controllers
             Name=name,
             Componentid=folderid,
             Password=password,
-            Typeofcomponent="folder"            
+            Typeofcomponent="папка"            
             });
             await db.SaveChangesAsync();
             return Ok();
         }
+
+
+        //Копирование компонента в папку
+        [HttpGet]
+        [Route("/folders/importfromfolder")]
+        public async Task<IActionResult> ImportFromFolder(int folderid, int importcompid,string type)
+        {
+            Folder newroot = await db.Folders.Where(x => x.Id == folderid).FirstOrDefaultAsync();
+            if (type=="folder")
+            {                
+                Folder oldfolder = await db.Folders.Where(x => x.Id == importcompid).FirstAsync();
+                Folder newfolder = new Folder()
+                {
+                    Name = oldfolder.Name,
+                    Parentfolderid = newroot.Id,
+                    Userid = oldfolder.Userid
+                };
+                db.Folders.Add(newfolder);
+                await db.SaveChangesAsync();
+                await AddFolders(oldfolder.Id, newfolder.Id, oldfolder.Userid);
+                await AddElements(oldfolder.Id, newfolder.Id);
+                return Ok();
+            }
+            else //если копировался элемент
+            {
+                Element oldelement = await db.Elements.Where(x => x.Id == importcompid).FirstAsync();
+                Element newelement = new Element()
+                {
+                    Image=oldelement.Image,                    
+                    Name = oldelement.Name,
+                    Parentfolderid = newroot.Id,
+                };
+                db.Elements.Add(newelement);
+                await db.SaveChangesAsync();
+                await AddCharacteristics(oldelement.Id, newelement.Id);
+                await AddRelations(oldelement.Id, newelement.Id);
+                return Ok();
+            }
+            
+        }
+
+        [HttpGet]
+        [Route("/folders/importfromlib")]
+        public async Task<IActionResult> ImportFromLibrary(int folderid, int importcompid, string password)
+        {
+            Library lib = await db.Libraries.Where(x => x.Id == importcompid).FirstOrDefaultAsync();
+            if (lib.Password == password)
+            {
+                Folder newroot = await db.Folders.Where(x => x.Id == folderid).FirstOrDefaultAsync();
+                if (lib.Typeofcomponent == "папка")
+                {
+                    Folder oldfolder = await db.Folders.Where(x => x.Id == lib.Componentid).FirstAsync();
+                    Folder newfolder = new Folder()
+                    {
+                        Name = oldfolder.Name,
+                        Parentfolderid = newroot.Id,
+                        Userid = newroot.Userid
+                    };
+                    db.Folders.Add(newfolder);
+                    await db.SaveChangesAsync();
+                    await AddFolders(oldfolder.Id, newfolder.Id, newroot.Userid);
+                    await AddElements(oldfolder.Id, newfolder.Id);
+                    return Ok();
+                }
+                else
+                {
+                    Element oldelement = await db.Elements.Where(x => x.Id == lib.Componentid).FirstAsync();
+                    Element newelement = new Element()
+                    {
+                        Image = oldelement.Image,
+                        Name = oldelement.Name,
+                        Parentfolderid = newroot.Id,
+                    };
+                    db.Elements.Add(newelement);
+                    await db.SaveChangesAsync();
+                    await AddCharacteristics(oldelement.Id, newelement.Id);
+                    await AddRelations(oldelement.Id, newelement.Id);
+                    return Ok();
+                };                
+            }
+            else
+            {
+                return BadRequest("Неверный пароль");
+            }
+        }
+
+        public async Task AddRelations(int oldelement, int newelement)
+        {
+            
+        }
+
 
         public async Task AddFolders(int oldparentfolder, int newparentfolder, int userid)
         {
