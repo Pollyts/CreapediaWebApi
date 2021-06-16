@@ -158,17 +158,17 @@ namespace CreapediaWebApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Folder>> DeleteFolder(int id)
+        public async Task<ActionResult<Templatefolder>> DeleteTFolder(int id)
         {
-            var folder = await db.Folders.FindAsync(id);
-            if (folder == null)
+            var tfolder = await db.Templatefolders.FindAsync(id);
+            if (tfolder == null)
             {
                 return NotFound();
             }
-            db.Folders.Remove(folder);
+            db.Templatefolders.Remove(tfolder);
             await db.SaveChangesAsync();
 
-            return folder;
+            return tfolder;
         }
     }
 }
