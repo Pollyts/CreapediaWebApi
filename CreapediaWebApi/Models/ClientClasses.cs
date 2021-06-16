@@ -60,6 +60,17 @@ namespace CreapediaWebApi.Models
         public string Rel1to2 { get; set; }
         public string Rel2to1 { get; set; }
     }
+    public class SetOfNewTemplateCharacteristics
+    {
+        public NewTemplateCharacteristic[] characteristics { get; set; }
+        public int elementid { get; set; }
+    }
+    public class NewTemplateCharacteristic
+    {
+        public string Name { get; set; }
+        public string Value { get; set; }
+        public int Id { get; set; }
+    }
 
     public class NewCharacteristic
     {

@@ -34,65 +34,7 @@ namespace CreapediaWebApi.Controllers
             return telements;
         }
         public static List<FullCharacteristic> listofcharacteristics;
-
-        //get /elements?idelement=5
-        //[HttpGet]
-        //public async Task<ActionResult<FullCharacteristic[]>> GetTemplatesForElement(int idelement)
-        //{
-        //    listofcharacteristics = new List<FullCharacteristic>();
-        //    Templatelink[] templatelinks = await db.Templatelinks.Where(x => x.Childelementid == idelement).ToArrayAsync();
-        //    foreach (Templatelink tl in templatelinks)
-        //    {
-        //        await GetTemplatesFromChild(tl.Parenttelementid);
-        //    }
-        //    if(templatelinks.Length==0)
-        //    {
-        //        Templatecharacteristic[] templatecharacteristics = await db.Templatecharacteristics.Where(x => x.Telementid == idelement).ToArrayAsync();
-        //        Templateelement currentelement = await db.Templateelements.Where(x => x.Id == idelement).FirstAsync();
-        //        //Добавить характеристики родителя
-        //        foreach (Templatecharacteristic tc in templatecharacteristics)
-        //        {
-        //            FullCharacteristic fc = new FullCharacteristic()
-        //            {
-        //                IdParent = currentelement.Id,
-        //                NameParent = currentelement.Name,
-        //                IdCharacter = tc.Id,
-        //                NameCharacter = tc.Name,
-        //                ValueCharacter = tc.Value
-        //            };
-        //            listofcharacteristics.Add(fc);
-        //        }
-        //    }
-        //    return listofcharacteristics.ToArray();
-        //}
-
-        //public async Task GetTemplatesFromChild(int childid)
-        //{
-        //    //Найти все характеристики
-        //    Templatecharacteristic[] templatecharacteristics = await db.Templatecharacteristics.Where(x => x.Telementid == childid).ToArrayAsync();
-        //    Templateelement currentelement = await db.Templateelements.Where(x => x.Id == childid).FirstAsync();
-        //    //Добавить характеристики родителя
-        //    foreach (Templatecharacteristic tc in templatecharacteristics)
-        //    {
-        //        FullCharacteristic fc = new FullCharacteristic()
-        //        {
-        //            IdParent = currentelement.Id,
-        //            NameParent = currentelement.Name,
-        //            IdCharacter = tc.Id,
-        //            NameCharacter = tc.Name,
-        //            ValueCharacter = tc.Value
-        //        };
-        //        listofcharacteristics.Add(fc);
-        //    }
-        //    //Найти всех родителей
-        //    Templatelink[] templatelinks = await db.Templatelinks.Where(x => x.Childelementid == childid).ToArrayAsync();
-        //    //Рекурсия по родителям
-        //    foreach (Templatelink tl in templatelinks)
-        //    {
-        //        await GetTemplatesFromChild(tl.Parenttelementid);
-        //    }
-
-        //}
+       
         [HttpPost]
         public async Task<IActionResult> PostTelement(Templateelement telement)
         {

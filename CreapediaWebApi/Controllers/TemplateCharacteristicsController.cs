@@ -71,5 +71,21 @@ namespace CreapediaWebApi.Controllers
 
         }
 
+
+        [HttpPost]
+        public async Task<IActionResult> PostCharacteristics(SetOfNewTemplateCharacteristics set)
+        {
+            foreach (NewTemplateCharacteristic nc in set.characteristics)
+            {
+                db.Templatecharacteristics.Add(new Templatecharacteristic
+                {
+                    Name = nc.Name,
+                    Value = nc.Value,
+                    Telementid = set.elementid
+                });
+            }
+            await db.SaveChangesAsync();
+            return Ok();
+        }
     }
 }
