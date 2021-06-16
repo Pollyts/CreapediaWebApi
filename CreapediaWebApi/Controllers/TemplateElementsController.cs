@@ -56,6 +56,46 @@ namespace CreapediaWebApi.Controllers
             return Ok();
         }
 
+        [HttpPut]
+        public async Task<ActionResult<int>> PutElement(TemplateElementForEdit editelem)
+        {
+
+            //изменить имя
+            Templateelement el = await db.Templateelements.Where(x => x.Id == editelem.IdElement).FirstAsync();
+            el.Name = editelem.Name;
+            db.Entry(el).State = EntityState.Modified;
+            //List<Characteristic> chars = await db.Characteristics.Where(x => x.Elementid == editelem.IdElement).ToListAsync();
+            //foreach (Characteristic c in chars)
+            //{
+            //    if (!Array.Exists(editelem.characteristics, x => x.Id == c.Id))
+            //    {
+            //        db.Characteristics.Remove(c);
+            //    }
+            //}
+            //await db.SaveChangesAsync();
+            //изменить классы
+            Templatelink[] elementlinks = await db.Templatelinks.Where(x => x.Childelementid == editelem.IdElement).ToArrayAsync();
+            foreach (Templatelink e in elementlinks)
+            {
+                if (!Array.Exists(editelem.templatecharacteristics, x => x.Id == e.Parenttelementid))
+                {
+                    db.Templatelinks.Remove(e);
+                }
+            }
+            await db.SaveChangesAsync();
+            //изменить характеристики
+            Templatecharacteristic[] characteristics = await db.Templatecharacteristics.Where(x => x.Telementid == editelem.IdElement).ToArrayAsync();
+            foreach (Templatecharacteristic c in characteristics)
+            {
+                if (!Array.Exists(editelem.characteristics, x => x.Id == c.Id))
+                {
+                    db.Templatecharacteristics.Remove(c);
+                }
+            }
+            await db.SaveChangesAsync();            
+            return el.Id;
+        }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<Templateelement>> DeleteElement(int id)
         {

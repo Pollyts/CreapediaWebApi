@@ -20,6 +20,14 @@ namespace CreapediaWebApi.Models
         public string Name { get; set; }
     }
 
+    public class TemplateElementForEdit
+    {
+        public int IdElement { get; set; }
+        public string Name { get; set; }
+        public Templatecharacteristic[] characteristics { get; set; }
+        public ShortTelement[] templatecharacteristics { get; set; }
+    }
+
     public class ElementForEdit
     {
         public int IdElement { get; set; }

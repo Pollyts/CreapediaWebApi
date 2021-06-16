@@ -87,5 +87,23 @@ namespace CreapediaWebApi.Controllers
             await db.SaveChangesAsync();
             return Ok();
         }
+
+        [HttpGet]
+        [Route("/templatecharacteristics/only")]
+        public async Task<ActionResult<ShortTelement[]>> GetTemplateCharacteristicsOnlyForTElement(int idelement)
+        {
+            List<ShortTelement> templateelements = new List<ShortTelement>();
+            Templatelink[] elementlinks = await db.Templatelinks.Where(x => x.Childelementid == idelement).ToArrayAsync();
+            foreach (Templatelink el in elementlinks)
+            {
+                Templateelement tel = await db.Templateelements.Where(x => x.Id == el.Parenttelementid).FirstOrDefaultAsync();
+                templateelements.Add(new ShortTelement
+                {
+                    Id = tel.Id,
+                    Name = tel.Name
+                });
+            }
+            return templateelements.ToArray();
+        }
     }
 }
