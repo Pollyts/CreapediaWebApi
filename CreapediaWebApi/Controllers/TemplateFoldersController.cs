@@ -128,32 +128,31 @@ namespace CreapediaWebApi.Controllers
             return Ok();
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutTFolder(int id, Folder folder)
+        [HttpPut]
+        public async Task<IActionResult> PutFolder(TemplateFolderForEdit editfolder)
         {
-            if (id != folder.Id)
-            {
-                return BadRequest();
-            }
-
+            Templatefolder folder = await db.Templatefolders.Where(x => x.Id == editfolder.IdFolder).FirstAsync();
+            folder.Name = editfolder.Name;
+            folder.Parentfolderid = editfolder.IdParent;
             db.Entry(folder).State = EntityState.Modified;
-
-            try
+            List<Templatefolder> subfolders = await db.Templatefolders.Where(x => x.Parentfolderid == editfolder.IdFolder).ToListAsync();
+            foreach (Templatefolder f in subfolders)
             {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!db.Folders.Any(e => e.Id == id))
+                if (!Array.Exists(editfolder.subfolders, x => x.Id == f.Id))
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    db.Templatefolders.Remove(f);
                 }
             }
-
+            await db.SaveChangesAsync();
+            Templateelement[] elements = await db.Templateelements.Where(x => x.Parentfolderid == editfolder.IdFolder).ToArrayAsync();
+            foreach (Templateelement e in elements)
+            {
+                if (!Array.Exists(editfolder.elements, x => x.Id == e.Id))
+                {
+                    db.Templateelements.Remove(e);
+                }
+            }
+            await db.SaveChangesAsync();
             return NoContent();
         }
 

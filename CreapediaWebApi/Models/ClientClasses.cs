@@ -28,6 +28,15 @@ namespace CreapediaWebApi.Models
         public ShortTelement[] templatecharacteristics { get; set; }
         public FullRelation[] relations { get; set; }
     }
+
+    public class TemplateFolderForEdit
+    {
+        public int IdFolder { get; set; }
+        public string Name { get; set; }
+        public int IdParent { get; set; }
+        public Templatefolder[] subfolders { get; set; }
+        public Templateelement[] elements { get; set; }
+    }
     public class FolderForEdit
     {
         public int IdFolder { get; set; }
