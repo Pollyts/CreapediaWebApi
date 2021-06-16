@@ -42,5 +42,31 @@ namespace CreapediaWebApi.Controllers
             await db.SaveChangesAsync();
             return Ok();
         }
+
+        [HttpGet]
+        [Route("/templateelements/templatefolder")]
+        public async Task<IActionResult> SetTemplateElement(int templateid, int elementid)
+        {
+            db.Templatelinks.Add(new Templatelink()
+            {
+                Parenttelementid = templateid,
+                Childelementid = elementid
+            });
+            await db.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Templateelement>> DeleteElement(int id)
+        {
+            var element = await db.Templateelements.FindAsync(id);
+            if (element == null)
+            {
+                return NotFound();
+            }
+            db.Templateelements.Remove(element);
+            await db.SaveChangesAsync();
+            return element;
+        }
     }
 }
