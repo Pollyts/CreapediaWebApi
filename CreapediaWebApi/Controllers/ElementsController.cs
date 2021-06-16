@@ -213,6 +213,103 @@ namespace CreapediaWebApi.Controllers
             await db.SaveChangesAsync();
             return el.Id;
         }
-        
+
+        [HttpGet]
+        [Route("/elements/exporttouser")]
+        public async Task<IActionResult> ExportToUser(int elementid, string usermail)
+        {
+            User user = await db.Users.Where(x => x.Mail == usermail).FirstAsync();
+            if (user == null)
+                return BadRequest("Нет такого пользователя");
+            else
+            {
+                Folder Projects = await db.Folders.Where(x => x.Userid == user.Id && x.Parentfolderid == null).FirstOrDefaultAsync();
+                Folder import = await db.Folders.Where(x => x.Name == "Импорт" && x.Userid == user.Id && x.Parentfolderid == Projects.Id).FirstOrDefaultAsync();
+                if (import == null)
+                {
+                    import = new Folder()
+                    {
+                        Name = "Импорт",
+                        Userid = user.Id,
+                        Parentfolderid = Projects.Id
+                    };
+                    db.Folders.Add(import);
+                }
+                await db.SaveChangesAsync();
+                Element oldelem = await db.Elements.Where(x => x.Id == elementid).FirstAsync();
+                Element newelement = new Element()
+                {
+                    Name = oldelem.Name,
+                    Image = oldelem.Image,   
+                    Parentfolderid = import.Id,
+                };
+                db.Elements.Add(newelement);
+                await db.SaveChangesAsync();
+                await AddCharacteristics(oldelem.Id, newelement.Id);
+                return Ok();
+            }
+        }
+        public async Task AddCharacteristics(int oldelement, int newelement)
+        {
+            //получила все характеристики старого
+            Characteristic[] chars = await db.Characteristics.Where(x => x.Elementid == oldelement).ToArrayAsync();
+            if (chars.Length > 0)
+                foreach (Characteristic c in chars)
+                {
+                    Characteristic newcharacteristic = new Characteristic()
+                    {
+                        Value = c.Value,
+                        Name = c.Name,
+                        Elementid = newelement,
+                    };
+                    db.Characteristics.Add(newcharacteristic);
+                }
+            Elementlink[] elementlinks = await db.Elementlinks.Where(x => x.Childelementid == oldelement).ToArrayAsync();
+            foreach (Elementlink el in elementlinks)
+            {
+                Elementlink newlink = new Elementlink()
+                {
+                    Parenttelementid = el.Parenttelementid,
+                    Childelementid = newelement
+                };
+                db.Elementlinks.Add(newlink);
+            }
+        }
+
+        [HttpGet]
+        [Route("/elements/exporttofolder")]
+        public async Task<IActionResult> ExportToFolder(int elementid, int newrootid)
+        {
+            Folder newroot = await db.Folders.Where(x => x.Id == newrootid).FirstOrDefaultAsync();
+            Element oldelem = await db.Elements.Where(x => x.Id == elementid).FirstAsync();
+            Element newelement = new Element()
+            {
+                Name = oldelem.Name,
+                Image = oldelem.Image,
+                Parentfolderid = newroot.Id,
+            };
+            db.Elements.Add(newelement);
+            await db.SaveChangesAsync();
+            await AddCharacteristics(oldelem.Id, newelement.Id);
+            await db.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("/elements/exporttolibrary")]
+        public async Task<IActionResult> ExportToLibrary(int elementid, string name, string password)
+        {
+            db.Libraries.Add(new Library()
+            {
+                Name = name,
+                Componentid = elementid,
+                Password = password,
+                Typeofcomponent = "папка"
+            });
+            await db.SaveChangesAsync();
+            return Ok();
+        }
+
+
     }
 }
