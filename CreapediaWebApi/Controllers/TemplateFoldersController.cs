@@ -196,7 +196,6 @@ namespace CreapediaWebApi.Controllers
                 db.Templateelements.Add(newelement);
                 await db.SaveChangesAsync();
                 await AddCharacteristics(oldelement.Id, newelement.Id);
-                await AddRelations(oldelement.Id, newelement.Id);
                 return Ok();
             }
 
