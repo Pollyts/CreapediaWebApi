@@ -108,5 +108,99 @@ namespace CreapediaWebApi.Controllers
             await db.SaveChangesAsync();
             return element;
         }
+
+        [HttpGet]
+        [Route("/templateelements/exporttouser")]
+        public async Task<IActionResult> ExportToUser(int elementid, string usermail)
+        {
+            User user = await db.Users.Where(x => x.Mail == usermail).FirstAsync();
+            if (user == null)
+                return BadRequest("Нет такого пользователя");
+            else
+            {
+                Templatefolder Library = await db.Templatefolders.Where(x => x.Userid == user.Id && x.Parentfolderid == null).FirstOrDefaultAsync();
+                Templatefolder import = await db.Templatefolders.Where(x => x.Name == "Импорт" && x.Userid == user.Id && x.Parentfolderid == Library.Id).FirstOrDefaultAsync();
+                if (import == null)
+                {
+                    import = new Templatefolder()
+                    {
+                        Name = "Импорт",
+                        Userid = user.Id,
+                        Parentfolderid = Library.Id
+                    };
+                    db.Templatefolders.Add(import);
+                }
+                await db.SaveChangesAsync();
+                Templateelement oldelem = await db.Templateelements.Where(x => x.Id == elementid).FirstAsync();
+                Templateelement newelement = new Templateelement()
+                {
+                    Name = oldelem.Name,
+                    Parentfolderid = import.Id,
+                };
+                db.Templateelements.Add(newelement);
+                await db.SaveChangesAsync();
+                await AddCharacteristics(oldelem.Id, newelement.Id);
+                return Ok();
+            }
+        }
+        public async Task AddCharacteristics(int oldelement, int newelement)
+        {
+            //получила все характеристики старого
+            Templatecharacteristic[] chars = await db.Templatecharacteristics.Where(x => x.Telementid == oldelement).ToArrayAsync();
+            if (chars.Length > 0)
+                foreach (Templatecharacteristic c in chars)
+                {
+                    Templatecharacteristic newcharacteristic = new Templatecharacteristic()
+                    {
+                        Value = c.Value,
+                        Name = c.Name,
+                        Telementid = newelement
+                    };
+                    db.Templatecharacteristics.Add(newcharacteristic);
+                }
+            Templatelink[] elementlinks = await db.Templatelinks.Where(x => x.Childelementid == oldelement).ToArrayAsync();
+            foreach (Templatelink el in elementlinks)
+            {
+                Templatelink newlink = new Templatelink()
+                {
+                    Parenttelementid = el.Parenttelementid,
+                    Childelementid = newelement
+                };
+                db.Templatelinks.Add(newlink);
+            }
+        }
+
+        [HttpGet]
+        [Route("/templateelements/exporttofolder")]
+        public async Task<IActionResult> ExportToFolder(int elementid, int newrootid)
+        {
+            Templatefolder newroot = await db.Templatefolders.Where(x => x.Id == newrootid).FirstOrDefaultAsync();
+            Templateelement oldelem = await db.Templateelements.Where(x => x.Id == elementid).FirstAsync();
+            Templateelement newelement = new Templateelement()
+            {
+                Name = oldelem.Name,
+                Parentfolderid = newroot.Id
+            };
+            db.Templateelements.Add(newelement);
+            await db.SaveChangesAsync();
+            await AddCharacteristics(oldelem.Id, newelement.Id);
+            await db.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("/templateelements/exporttolibrary")]
+        public async Task<IActionResult> ExportToLibrary(int elementid, string name, string password)
+        {
+            db.Libraries.Add(new Library()
+            {
+                Name = name,
+                Componentid = elementid,
+                Password = password,
+                Typeofcomponent = "класс"
+            });
+            await db.SaveChangesAsync();
+            return Ok();
+        }
     }
 }
