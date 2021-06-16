@@ -130,7 +130,7 @@ namespace CreapediaWebApi.Controllers
         }
 
         [HttpGet]
-        [Route("/folders/exporttofolder")]
+        [Route("/templatefolders/exporttofolder")]
         public async Task<IActionResult> ExportToFolder(int folderid, int newrootid)
         {
             Templatefolder newroot = await db.Templatefolders.Where(x => x.Id == newrootid).FirstOrDefaultAsync();
@@ -149,7 +149,7 @@ namespace CreapediaWebApi.Controllers
         }
 
         [HttpGet]
-        [Route("/folders/exporttolibrary")]
+        [Route("/templatefolders/exporttolibrary")]
         public async Task<IActionResult> ExportToLibrary(int folderid, string name, string password)
         {
             db.Libraries.Add(new Library()
@@ -166,7 +166,7 @@ namespace CreapediaWebApi.Controllers
 
         //Копирование компонента в папку
         [HttpGet]
-        [Route("/folders/importfromfolder")]
+        [Route("/templatefolders/importfromfolder")]
         public async Task<IActionResult> ImportFromFolder(int folderid, int importcompid, string type)
         {
             Templatefolder newroot = await db.Templatefolders.Where(x => x.Id == folderid).FirstOrDefaultAsync();
@@ -203,7 +203,7 @@ namespace CreapediaWebApi.Controllers
         }
 
         [HttpGet]
-        [Route("/folders/importfromlib")]
+        [Route("/templatefolders/importfromlib")]
         public async Task<IActionResult> ImportFromLibrary(int folderid, int importcompid, string password)
         {
             Library lib = await db.Libraries.Where(x => x.Id == importcompid).FirstOrDefaultAsync();
