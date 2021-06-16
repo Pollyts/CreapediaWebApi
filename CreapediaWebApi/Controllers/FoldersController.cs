@@ -107,7 +107,7 @@ namespace CreapediaWebApi.Controllers
             Name=name,
             Componentid=folderid,
             Password=password,
-            Typeofcomponent="папка"            
+            Typeofcomponent="папка с элементами"            
             });
             await db.SaveChangesAsync();
             return Ok();
