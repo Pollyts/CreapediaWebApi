@@ -164,6 +164,55 @@ namespace CreapediaWebApi.Controllers
             return element;
         }
 
+        [HttpPut]
+        public async Task<ActionResult<int>> PutElement(ElementForEdit editelem)
+        {
 
+            //изменить имя
+            Element el = await db.Elements.Where(x => x.Id == editelem.IdElement).FirstAsync();
+            el.Name = editelem.Name;
+            db.Entry(el).State = EntityState.Modified;
+            //List<Characteristic> chars = await db.Characteristics.Where(x => x.Elementid == editelem.IdElement).ToListAsync();
+            //foreach (Characteristic c in chars)
+            //{
+            //    if (!Array.Exists(editelem.characteristics, x => x.Id == c.Id))
+            //    {
+            //        db.Characteristics.Remove(c);
+            //    }
+            //}
+            //await db.SaveChangesAsync();
+            //изменить классы
+            Elementlink[] elementlinks = await db.Elementlinks.Where(x => x.Childelementid == editelem.IdElement).ToArrayAsync();
+            foreach (Elementlink e in elementlinks)
+            {
+                if (!Array.Exists(editelem.templatecharacteristics, x => x.Id == e.Parenttelementid))
+                {
+                    db.Elementlinks.Remove(e);
+                }
+            }
+            await db.SaveChangesAsync();
+            //изменить характеристики
+            Characteristic[] characteristics = await db.Characteristics.Where(x => x.Elementid == editelem.IdElement).ToArrayAsync();
+            foreach (Characteristic c in characteristics)
+            {
+                if (!Array.Exists(editelem.characteristics, x => x.Id == c.Id))
+                {
+                    db.Characteristics.Remove(c);
+                }
+            }
+            await db.SaveChangesAsync();
+            //изменить связи
+            Relation[] relations = await db.Relations.Where(x => x.Firstelementid == editelem.IdElement || x.Secondelementid == editelem.IdElement).ToArrayAsync();
+            foreach (Relation r in relations)
+            {
+                if (!Array.Exists(editelem.relations, x => x.Id == r.Id))
+                {
+                    db.Relations.Remove(r);
+                }
+            }
+            await db.SaveChangesAsync();
+            return el.Id;
+        }
+        
     }
 }

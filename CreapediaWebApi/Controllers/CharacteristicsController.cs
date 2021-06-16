@@ -34,6 +34,25 @@ namespace CreapediaWebApi.Controllers
         //get /characteristics?idelement=5
 
         [HttpGet]
+        [Route("/Characteristics/only")]
+        public async Task<ActionResult<ShortTelement[]>> GetTemplateCharacteristicsOnlyForElement(int idelement)
+        {
+            List<ShortTelement> templateelements = new List<ShortTelement>();
+            Elementlink[] elementlinks = await db.Elementlinks.Where(x => x.Childelementid == idelement).ToArrayAsync();
+            foreach (Elementlink el in elementlinks)
+            {
+                Templateelement tel = await db.Templateelements.Where(x => x.Id == el.Parenttelementid).FirstOrDefaultAsync();
+                templateelements.Add(new ShortTelement
+                {
+                    Id = tel.Id,
+                    Name = tel.Name
+                });
+            }
+            return templateelements.ToArray();
+        }
+
+
+        [HttpGet]
         public async Task<ActionResult<FullCharacteristic[]>> GetTemplateCharacteristicsForElement(int idelement)
         {
             listofcharacteristics = new List<FullCharacteristic>();

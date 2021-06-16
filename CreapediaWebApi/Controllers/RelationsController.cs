@@ -27,6 +27,7 @@ namespace CreapediaWebApi.Controllers
             {
                 fullRelations.Add(new FullRelation()
                 {
+                    Id=r.Id,
                     NameFirstElement = await db.Elements.Where(x => x.Id == r.Firstelementid).Select(x => x.Name).FirstAsync(),
                     NameSecondElement = await db.Elements.Where(x => x.Id == r.Secondelementid).Select(x => x.Name).FirstAsync(),
                     Rel1to2 = r.Rel1to2,

@@ -14,6 +14,20 @@ namespace CreapediaWebApi.Models
         public int Id { get; set; }
         public string Name { get; set; }
     }
+    public class ShortTelement
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class ElementForEdit
+    {
+        public int IdElement { get; set; }
+        public string Name { get; set; }
+        public Characteristic[] characteristics { get; set; }
+        public ShortTelement[] templatecharacteristics { get; set; }
+        public FullRelation[] relations { get; set; }
+    }
     public class FolderForEdit
     {
         public int IdFolder { get; set; }
@@ -29,6 +43,7 @@ namespace CreapediaWebApi.Models
     }
     public class FullRelation
     {
+        public int Id { get; set; }
         public string NameFirstElement { get; set; }
         public string NameSecondElement { get; set; }
         public int IdFirst { get; set; }
@@ -62,12 +77,7 @@ namespace CreapediaWebApi.Models
     }
     public class ElementWithImage
     {
-        public int parentfolderid { get; set; }
-        //public string Name { get; set; }
         public IFormFile Image { get; set; }
-        //public string FileName { get; set; }
-
-        //public IFormFile Image { get; set; }
     }
     public class MainComponent
     {
