@@ -73,31 +73,14 @@ namespace CreapediaWebApi.Controllers
         // PUT: api/Users/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        [HttpPut("{mail}")]
+        public async Task<IActionResult> PutUser(string mail, User newuser)
         {
-            if (id != user.Id)
-            {
-                return BadRequest();
-            }
-
+            User user = await db.Users.Where(x => x.Mail == mail).FirstAsync();
+            user.Mail = newuser.Mail;
+            user.Password = newuser.Password;
             db.Entry(user).State = EntityState.Modified;
-
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await db.SaveChangesAsync();
             return NoContent();
         }
 
@@ -131,14 +114,10 @@ namespace CreapediaWebApi.Controllers
         }
 
         // DELETE: api/Users/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<User>> DeleteUser(int id)
+        [HttpDelete("{mail}")]
+        public async Task<ActionResult<User>> DeleteUser(string mail)
         {
-            var user = await db.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
+            User user = await db.Users.Where(x => x.Mail == mail).FirstAsync();            
             db.Users.Remove(user);
             await db.SaveChangesAsync();
 

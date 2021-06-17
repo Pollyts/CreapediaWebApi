@@ -161,7 +161,7 @@ namespace CreapediaWebApi.Controllers
             if (lib.Password == password)
             {
                 Folder newroot = await db.Folders.Where(x => x.Id == folderid).FirstOrDefaultAsync();
-                if (lib.Typeofcomponent == "папка")
+                if (lib.Typeofcomponent == "папка c элементами")
                 {
                     Folder oldfolder = await db.Folders.Where(x => x.Id == lib.Componentid).FirstAsync();
                     Folder newfolder = new Folder()
